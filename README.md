@@ -10,6 +10,7 @@
 #download the file and add it to your working directory 
 
 #EXPLORATORY DATA ANALYSIS 
+
 #1. get the number of observations (rows) and variables, and a head of the first cases (gimpse())
 
 #2. get the metrics about data types, zeros, infinite numbers, and missing values
@@ -38,3 +39,11 @@
 #Check Distributions (same as before)
 
 #based on the results from the EDA, it will be useful to clean the datasets and prep it for further downstream analysis 
+
+#CLEAN
+#use lubidate to change the dates to POSIX 
+#change zip codes to only include USA zip codes (based on the areas the hubs are posted in), change the rest to NA 
+#take the T's in precipitate and make them NAs
+#remove duplicates 
+
+
