@@ -72,4 +72,4 @@ weather_clean <- weather_clean %>%
   mutate(precipitation_inches = ifelse(precipitation_inches == "T", NA, precipitation_inches))
 #precipitation_inches is currently a character, change to numeric
 weather_clean$precipitation_inches <- as.numeric(weather_clean$precipitation_inches)
-
+summary(weather_clean)
