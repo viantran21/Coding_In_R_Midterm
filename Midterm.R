@@ -42,10 +42,6 @@ station_clean <- distinct(station)
 trip_clean <- distinct(trip)
 weather_clean <- distinct(weather)
 
-#station - the number of dock_count ranged from 11-27, change it to a factor to see the groups of dock_count
-station_clean$dock_count <- as.factor(station_clean$dock_count)
-summary(station_clean)
-
 #use lubidate to change the dates to Date class
 library(lubridate)
 #station - installation_date change to MDY
@@ -73,3 +69,88 @@ weather_clean <- weather_clean %>%
 #precipitation_inches is currently a character, change to numeric
 weather_clean$precipitation_inches <- as.numeric(weather_clean$precipitation_inches)
 summary(weather_clean)
+
+#Exploratory Data Analysis 
+
+statistics <- function(data){
+    print(summary(data)) #summary of dataset
+    str(data) #number of observations (rows) and variables, and a head() of the first cases
+    print(status(data)) #summary - quantity and percentages of zeros/NAs/infinite numbers, datatype and quantity of unique values
+}
+
+statistics(station_clean)
+statistics(trip_clean)
+statistics(weather_clean)
+
+#display necessary categorical variables in graphs
+colours <- c("darkblue", "blue", "skyblue", "lightblue")
+
+#station
+barplot(table(station_clean$dock_count), 
+          main = paste("Frequency of Dock Counts"), 
+          xlab = "Dock Counts", 
+          ylab = "Frequency", 
+          col = colours,
+          ylim = c(0, 35),
+          cex.names = 1)
+
+barplot(table(station_clean$city), 
+        main = paste("Frequency of Cities"), 
+        xlab = "Cities", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 35),
+        cex.names = 0.8)
+
+#trip
+barplot(table(trip_clean$start_station_name), 
+        main = paste("Frequency of Start Stations"), 
+        xlab = "Start Stations", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 35000),
+        cex.names = 0.5)
+
+barplot(table(trip_clean$end_station_name), 
+        main = paste("Frequency of End Stations"), 
+        xlab = "End Stations", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 35000),
+        cex.names = 0.5)
+max(table(trip_clean$end_station_name))
+
+barplot(table(trip_clean$subscription_type), 
+        main = paste("Frequency of Subscription Type"), 
+        xlab = "Subscription Type", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 300000),
+        cex.names = 1)
+
+#this could also been done in a function but I wanted to personalized certain metrics of the graphs
+
+#the function will display necessary numerical variable
+#trip
+hist(log(trip_clean$duration), 
+        main = paste("Frequency of Duration"), 
+        xlab = "Duration", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 15e+04))
+#NOTE - there are riders who have done on bike rides for more than a day
+
+#weather - update it based on the city 
+#max_temperature_f
+#mean_temperature_f
+#min_temperature_f
+#max_visibility_miles
+#mean_visibility_miles
+#min_visibility_miles
+#max_wind_Speed_mph
+#mean_wind_Speed_mph
+#max_gust_speed_mph
+#precipitation_inches
+#cloud_cover
+
+
