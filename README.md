@@ -9,7 +9,7 @@
 #note the trips.csv file is too large to upload and commit to GitHub so please 
 #download the file and add it to your working directory 
 
-#EXPLORATORY DATA ANALYSIS - FIX ACCORDING TO NEW PLAN
+#EXPLORATORY DATA ANALYSIS 
 #1. get the number of observations (rows) and variables, and a head of the first cases (gimpse())
 
 #2. get the metrics about data types, zeros, infinite numbers, and missing values
