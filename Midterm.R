@@ -242,12 +242,4 @@ sum(trip_clean3$realistic_rides == "unrealistic")
 #remove the helper column realistic_rides to remove outliers trips
 trip_clean3 <- subset(trip_clean3, select=c(-realistic_rides))
 
-#
-#max wind speed > 50 mph is dangerous and unlikely and its not aligning with mean wind speed - make NA - follow mean_wind_speed instead
-#high gust speed - could be why theyre not riding a lot those days 
-
-#make a new column with outliers or not 
-#make a new dataset with the necessary information similar to cancelled trip so we have a copy on file for reporting later 
-#record the trips ids for the final report #remove outliers from dataset
-
 
