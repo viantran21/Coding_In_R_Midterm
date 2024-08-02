@@ -154,3 +154,63 @@ hist(log(trip_clean$duration),
 #cloud_cover
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Cancelled Trips
+#check if the duration is less than 3 minutes (180 seconds) and if the start_station_id is the same as the end_station_id this is a cancelled trip
+#make a new column that states its "cancelled" or "trip"
+trip_clean2 <- trip_clean %>%
+  mutate(trip_status = ifelse(duration < 180 & start_station_id == end_station_id, "cancelled", "trip"))
+
+#record the trip IDs by isolating necessary variables in a new dataset
+trip_cancelled <- trip_clean2 %>% 
+  select(id, duration, start_station_name, end_station_name, start_station_id, 
+         end_station_id, trip_status) %>%
+  filter(trip_status == "cancelled") #filter for cancelled trip
+#this dataset will contain the IDS of the cancelled trips 
+
+#update the main dataset and remove the cancelled trip for further use
+trip_clean2 <- trip_clean2 %>%
+  filter(trip_status == "trip")
+
