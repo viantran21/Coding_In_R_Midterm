@@ -16,7 +16,7 @@
 #take the T's in precipitate and make them NAs
 #remove duplicates 
 
-#EXPLORATORY DATA ANALYSIS 
+#EXPLORATORY DATA ANALYSIS - CHANGE IT BASED ON NEW PLAN
 
 #1. get the number of observations (rows) and variables, and a head of the first cases (gimpse())
 
