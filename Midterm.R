@@ -197,6 +197,16 @@ hist(log(trip_clean3$duration),
 
 
 
+
+
+
+
+
+
+
+
+
+
 #Cancelled Trips
 #check if the duration is less than 3 minutes (180 seconds) and if the start_station_id is the same as the end_station_id this is a cancelled trip
 #make a new column that states its "cancelled" or "trip"
