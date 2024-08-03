@@ -283,12 +283,26 @@ hourly_trip_counts <- hourly_trip_counts %>%
 
 #display the hours in a histogram to visualize the rush hours times for weekdays only 
 #find when the trip volume for the hours is the highest
-ggplot(hourly_trip_counts, aes(x = as.numeric(hour), y = trip_count)) +
+ggplot(hourly_trip_counts, aes(x = hour, y = trip_count)) +
   geom_bar(stat = "identity", fill = "skyblue") + #heights of the bars to represent values in the data, use stat="identity"
   labs(title = "Trip Volume by Hour on Weekdays",
        x = "Hour of Day",
        y = "Number of Trips") +
-  theme_minimal() +
-  scale_x_continuous(breaks = 0:24)  #displays all 24 hours
+  theme_minimal() 
 
+#Rush Hour Frequencies 
+#rush hour during the week is considered from 7 to 9 am and 4 (16) to 6 (18) pm 
 
+#for the rush hours range, find the 10 most frequent starting stations and ending stations 
+#filter for rush hours entries during the week (7 to 9 am and 4 to 6 pm)
+trip_clean_rush_hour <- trip_clean_weekday %>%
+  filter (hour == 7|hour == 8|hour == 9|hour == 16|hour == 17|hour == 18)
+#check if the filtering worked
+table(trip_clean_rush_hour$hour)
+
+#lets look at the # of trips for each starting station 
+
+#lets look at the # of trips for each ending station
+
+#have a graph that displays the frequency of 
+#starting station and end stations and determine the top 10
