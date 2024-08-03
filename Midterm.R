@@ -283,12 +283,9 @@ hourly_trip_counts <- hourly_trip_counts %>%
 
 #display the hours in a histogram to visualize the rush hours times for weekdays only 
 #find when the trip volume for the hours is the highest
-ggplot(hourly_trip_counts, aes(x = as.numeric(hour), y = trip_count)) +
+ggplot(hourly_trip_counts, aes(x = (hour), y = trip_count)) +
   geom_bar(stat = "identity", fill = "skyblue") + #heights of the bars to represent values in the data, use stat="identity"
   labs(title = "Trip Volume by Hour on Weekdays",
        x = "Hour of Day",
        y = "Number of Trips") +
-  theme_minimal() +
-  scale_x_continuous(breaks = 0:24)  #displays all 24 hours
-
-
+  theme_minimal() 
