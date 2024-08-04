@@ -364,18 +364,39 @@ end_station_weekend <- end_station_weekend %>%
 
 #Average Use Per Month
 #make a new column showcasing each month (similar to weekend/weekday)
+trip_clean_month <- trip_clean4 %>%
+  mutate(month = month(start_date, label = TRUE, abbr = FALSE))
 
 #remove the day_of_week and day_type from the new dataset 
-
-
-
+trip_clean_month <- trip_clean_month %>%
+  select(-day_of_week, -day_type)
 
 #find the total duration for each month and convert it to total duration in hours (currently in seconds)
-
+month_duration <- trip_clean_month %>%
+  group_by(month) %>%
+  mutate(total_time_used = sum(duration)) %>%
+  mutate(total_time_used = total_time_used/3600) %>%
+  select(month, total_time_used) %>%
+  unique()
+  
 #total time available - assign each month the # of days per each month 
+days_month <- data.frame(
+  month = month.name,
+  days = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+)
+
+#assign these days to the month_duration dataset, merging them by the month
+month_duration <- merge(month_duration, days_month, by.x = "month", by.y = "month")
 
 #total time available - convert the # of days to # of hours per each month
+month_duration <- month_duration %>% 
+  mutate(total_time_available = days*24)
 
 #calculate the average utilization of bikes for each month(total time used/total time in month)
+month_duration <- month_duration %>% 
+  mutate(average_utilization = total_time_used/total_time_available) %>% 
+  arrange(desc(average_utilization)) #see what months people use the bikes the most vs. least
+
+
 
 
