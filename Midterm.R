@@ -361,3 +361,17 @@ setdiff(end_station_weekend$end_station_name, station_clean$name)
 end_station_weekend <- end_station_weekend %>%
   arrange(desc(trip_count)) %>% 
   head(10)
+
+#Average Use Per Month
+#make a new column showcasing each month (similar to weekend/weekday)
+
+#remove the day_of_week and day_type from the new dataset 
+
+
+
+
+
+#calculate the average utilization of bikes for each month #(total time used/total time in month)
+
+
+
