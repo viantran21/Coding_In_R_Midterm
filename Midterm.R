@@ -310,7 +310,8 @@ setdiff(start_station_trips$start_station_name, station_clean$name)
 #not impact the top 10 start stations 
 
 start_station_trips <- start_station_trips %>%
-  arrange(desc(trip_count))
+  arrange(desc(trip_count)) %>% 
+  head(10)
 
 #lets look at the # of trips for each ending station
 end_station_trips <- as.data.frame(table(trip_clean_rush_hour$end_station_name)) 
@@ -322,4 +323,5 @@ setdiff(end_station_trips$end_station_name, station_clean$name)
 #not impact the top 10 start stations 
 
 end_station_trips <- end_station_trips %>%
-  arrange(desc(trip_count))
+  arrange(desc(trip_count)) %>% 
+  head(10)
