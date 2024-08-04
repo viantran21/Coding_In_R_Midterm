@@ -370,8 +370,12 @@ end_station_weekend <- end_station_weekend %>%
 
 
 
+#find the total duration for each month and convert it to total duration in hours (currently in seconds)
 
-#calculate the average utilization of bikes for each month #(total time used/total time in month)
+#total time available - assign each month the # of days per each month 
 
+#total time available - convert the # of days to # of hours per each month
+
+#calculate the average utilization of bikes for each month(total time used/total time in month)
 
 
