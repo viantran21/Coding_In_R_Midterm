@@ -397,6 +397,24 @@ month_duration <- month_duration %>%
   mutate(average_utilization = total_time_used/total_time_available) %>% 
   arrange(desc(average_utilization)) #see what months people use the bikes the most vs. least
 
+#Weather Conditions
+#clean the weather dataset a bit more - the wind speed above 50 mph is a strong gale to hurricane force level (over 75 mph)
+#there was no reported high wind speed in those cities in 2014
+#therefore any wind speed above 50 mph should be given NA
+weather_clean1 <- weather_clean %>%
+  mutate(max_wind_Speed_mph = ifelse(max_wind_Speed_mph > 50, NA, max_wind_Speed_mph))
+
+#create separate trip and station dataset to includes variables that are necessary and remove the rest 
+#trip - include id, duration, start_date, start_station_name, start_station_id
+#station - include id and city 
+
+#join new trip and station dataset by the start_station_id (trip) and id (station) so that for each trip entry, it showcases the starting city 
+
+# combined the trip and weather dataset based on city and date (weather) and start_date and city (trip)
+
+#group it by city and look at each weather metric to see which one shows any correlation using cor() function 
 
 
+install.packages("corrplot")
+library(corrplot)
 
