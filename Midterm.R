@@ -337,3 +337,39 @@ setdiff(end_station_trips$end_station_name, station_clean$name)
 end_station_trips <- end_station_trips %>%
   arrange(desc(trip_count)) %>% 
   head(10)
+
+#Weekend Frequencies
+#filter for weekend dates (use trip_clean4)
+trip_clean_weekend <- trip_clean4 %>%
+  filter(day_type == "Weekend")
+
+#check if there are any weekdays
+sum(trip_clean_weekend$day_type != "Weekend")
+
+#lets look at the # of trips for each starting station 
+start_station_weekend <- as.data.frame(table(trip_clean_weekend$start_station_name))
+names(start_station_weekend) <- c("start_station_name", "trip_count")
+
+#there are 4 differently named stations compared to the original station file 
+setdiff(start_station_weekend$start_station_name, station_clean$name)
+#this could be because of misspelling but the # of trips at these stations are small that it would
+#not impact the top 10 start stations 
+
+#determine the top 10 starting station names
+start_station_weekend <- start_station_weekend %>%
+  arrange(desc(trip_count)) %>% 
+  head(10)
+
+#lets look at the # of trips for each ending station
+end_station_weekend <- as.data.frame(table(trip_clean_weekend$end_station_name))
+names(end_station_weekend) <- c("end_station_name", "trip_count")
+
+#there are 4 differently named stations compared to the original station file 
+setdiff(end_station_weekend$end_station_name, station_clean$name)
+#this could be because of misspelling but the # of trips at these stations are small that it would
+#not impact the top 10 start stations 
+
+#determine the top 10 ending station names
+end_station_weekend <- end_station_weekend %>%
+  arrange(desc(trip_count)) %>% 
+  head(10)
