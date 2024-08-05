@@ -250,11 +250,12 @@ write.csv(trip_outliers, "trip_outliers.csv", row.names = TRUE)
 #update the main dataset and remove the unrealistic trip for further use
 trip_clean3 <- trip_clean3 %>%
   filter(realistic_rides == "realistic") #filter and isolates entries that are under 11 hours long 
+#check if all the outliers are removed 
 sum(trip_clean3$realistic_rides == "unrealistic")
-#remove the helper column realistic_rides to remove outliers trips
+#remove the helper column realistic_rides to keep the dataset clean 
 trip_clean3 <- subset(trip_clean3, select=c(-realistic_rides))
 
-#historgram with the outliers remved
+#histogram update of duration with the outliers removed
 hist(log(trip_clean3$duration), 
      main = paste("Frequency of log(Duration)"), 
      xlab = "log(Duration)", 
@@ -262,7 +263,7 @@ hist(log(trip_clean3$duration),
      col = colours,
      ylim = c(0, 15e+04))
 
-#RUSH HOUR
+#Rush Hour
 #make a new column that separates and states whether its a weekday or weekend 
 trip_clean4 <- trip_clean3 %>%
   mutate(
@@ -280,7 +281,7 @@ sum(trip_clean_weekday$day_type != "Weekday")
 trip_clean_weekday <- trip_clean_weekday %>%
   mutate(hour = hour(start_date))
 
-#count the number of trips per each hour of the day during the week
+#group by each hour of the day during the week
 trip_clean_weekday <- trip_clean_weekday %>%
   group_by(hour)
 
@@ -294,7 +295,7 @@ hourly_trip_counts <- hourly_trip_counts %>%
 #display the hours in a histogram to visualize the rush hours times for weekdays only 
 #find when the trip volume for the hours is the highest
 ggplot(hourly_trip_counts, aes(x = hour, y = trip_count)) +
-  geom_bar(stat = "identity", fill = "skyblue") + #heights of the bars to represent values in the data, use stat="identity"
+  geom_bar(stat = "identity", fill = "skyblue") + #heights of the bars to represent the number of trips, use stat="identity"
   labs(title = "Trip Volume by Hour on Weekdays",
        x = "Hour of Day",
        y = "Number of Trips") +
@@ -310,28 +311,37 @@ trip_clean_rush_hour <- trip_clean_weekday %>%
 #check if the filtering worked
 table(trip_clean_rush_hour$hour)
 
-#lets look at the # of trips for each starting station 
-start_station_trips <- as.data.frame(table(trip_clean_rush_hour$start_station_name)) 
-names(start_station_trips) <- c("start_station_name", "trip_count")
+#lets look at the # of trips for each starting station ID
+start_station_trips <- as.data.frame(table(trip_clean_rush_hour$start_station_id)) 
+names(start_station_trips) <- c("start_station_ID", "trip_count")
 
-#there are 4 differently named stations compared to the original station file 
-setdiff(start_station_trips$start_station_name, station_clean$name)
-#this could be because of misspelling but the # of trips at these stations are small that it would
-#not impact the top 10 start stations 
+#there are 4 differently named stations compared to the original station file so doing it based on the ID ensures all is accounted for
+setdiff(start_station_trips$start_station_ID, station_clean$id)
 
+#add the station name to start_station_trips
+station_names <- station_clean %>%
+  select(id, name)
+
+station_names$id <- as.factor(station_names$id)
+start_station_trips <- start_station_trips %>%
+  left_join(station_names, by = c("start_station_ID" = "id"))
+
+#look at the top 10 start station names 
 start_station_trips <- start_station_trips %>%
   arrange(desc(trip_count)) %>% 
   head(10)
 
 #lets look at the # of trips for each ending station
-end_station_trips <- as.data.frame(table(trip_clean_rush_hour$end_station_name)) 
-names(end_station_trips) <- c("end_station_name", "trip_count")
+end_station_trips <- as.data.frame(table(trip_clean_rush_hour$end_station_id)) 
+names(end_station_trips) <- c("end_station_ID", "trip_count")
 
-#there are 4 differently named stations compared to the original station file 
-setdiff(end_station_trips$end_station_name, station_clean$name)
-#this could be because of misspelling but the # of trips at these stations are small that it would
-#not impact the top 10 start stations 
+#there are 4 differently named stations compared to the original station file so doing it based on the ID ensures all is accounted for
+setdiff(end_station_trips$end_station_ID, station_clean$id)
 
+end_station_trips <- end_station_trips %>%
+  left_join(station_names, by = c("end_station_ID" = "id"))
+
+#look at the top 10 end station names 
 end_station_trips <- end_station_trips %>%
   arrange(desc(trip_count)) %>% 
   head(10)
