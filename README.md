@@ -9,7 +9,15 @@
 #note the trips.csv file is too large to upload and commit to GitHub so please 
 #download the file and add it to your working directory 
 
-#EXPLORATORY DATA ANALYSIS 
+#CLEAN
+
+#use lubidate to change the dates to POSIX 
+#change zip codes to only include USA zip codes (based on the areas the hubs are posted in), change the rest to NA 
+#take the T's in precipitate and make them NAs
+#remove duplicates 
+
+#EXPLORATORY DATA ANALYSIS - CHANGE IT BASED ON NEW PLAN
+
 #1. get the number of observations (rows) and variables, and a head of the first cases (gimpse())
 
 #2. get the metrics about data types, zeros, infinite numbers, and missing values
@@ -38,3 +46,56 @@
 #Check Distributions (same as before)
 
 #based on the results from the EDA, it will be useful to clean the datasets and prep it for further downstream analysis 
+
+#CANCELLED TRIPS
+
+#check if the start station id is the same as the end station id 
+#if it is less than 3 minutes it is a cancelled trip 
+#duration variable is currently in seconds right now (3 minutes is 180 seconds)
+#find the number of cancelled trip - you can make a new column for that 
+#record the trip ids for your report - you can make a new dataset with cancelled trip variable with IDs, duration, start station id and end station id (for reporting later summarized)
+#in the new dataset filter for just the cancelled trips 
+#in the old dataset filter for not hte cancelled trips 
+#remove the cancelled trips from the dataset 
+
+#OUTLIERS
+
+#identify outliers in the dataset (the EDA will help you narrow down which outliers to takeout)
+#make a new column with outliers or not 
+#make a new dataset with the necessary information similar to cancelled trip so we have a copy on file for reporting later
+#record the trips ids for the final report 
+#remove outliers from dataset 
+
+#RUSH HOUR
+
+#separate the start date (currently as MDY_HM) to its individual compements of of date (MDY) and time (HM)
+#make a new column that separates and states whether its a weekday or weekend 
+#display the hours in a histogram to visualize the rush hours times for weekdays only 
+#find when the trip volume for the hours is the highest 
+
+#RUSH HOUR FREQUENCIES
+
+#for the rush hours range, find the 10 most frequent starting stations and ending stations 
+#filter for rush hours entries during the week 
+#have a graph that displays the frequnecy of starting station and end stations and determine the top 10
+
+#WEEKEND FREQUENCIES
+
+#filter for weekend dates 
+#have a graph that displays the frequency of starting stations and ending stations 
+#determine the top 10
+
+#AVERAGE USE PER MONTH
+
+#calculate the average utilization of bikes for each month
+#(total time used/total time in month)
+
+#WEATHER CONDITIONS
+
+#combine trip and weather dataset 
+#maybe we can look at it based on the city (via zip code - it may leave out a lot of entries so MAYBE right now) and date
+#would you look at the end station name and match it to the right zip code that would match to weather (it might take long to do this)
+#we can divide it by city and date and look at each weather metric to see which one shows any correlation (ie. graphs?)
+#then with the final weather conditions we do correlation (cor() function)
+
+
