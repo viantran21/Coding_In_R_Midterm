@@ -226,3 +226,33 @@ trip_cancelled <- trip_clean2 %>%
 #update the main dataset and remove the cancelled trip for further use
 trip_clean2 <- trip_clean2 %>%
   filter(trip_status == "trip")
+
+sum(trip_clean2$trip_status == "cancelled")
+#remove the helper column trip_status to remove cancelled trips
+trip_clean2 <- subset(trip_clean2, select=c(-trip_status))
+
+#Outliers
+#the world record for longest distanced cycled without stopping was 202.1 km in 10 hours and 44 minutes
+#therefore, it is unrealistic for someone to bike for more than 11 hours  (39600 seconds) in one sitting 
+#since it is a rental bike station, each individual will return the bike to a hub 
+#also between cities bike, the further distance (San Francisco to San Jose) should not take more than 5 hours without breaks so capping it at 11 hours is generous
+
+#duration > one day (86400 seconds) is excessive since it is renting = expensive
+#even if they are doing a cross city trip via a bike, you need to return your bike 
+#to the hub when you go to sleep 
+trip_clean3 <- trip_clean2 %>%
+  mutate(realistic_rides = ifelse(duration < 39600, "realistic", "unrealistic")) 
+
+#record the trip IDs that were outliers by isolating necessary variables in a new dataset
+trip_outliers <- trip_clean3 %>% 
+  select(id, duration, start_station_name, end_station_name, realistic_rides) %>%
+  filter(realistic_rides == "unrealistic") #filter for unrealistic/outlier trip
+#this dataset will contain the IDS of the outlier trips 
+
+#update the main dataset and remove the unrealistic trip for further use
+trip_clean3 <- trip_clean3 %>%
+  filter(realistic_rides == "realistic") #filter and isolates entries that are under 11 hours long 
+sum(trip_clean3$realistic_rides == "unrealistic")
+#remove the helper column realistic_rides to remove outliers trips
+trip_clean3 <- subset(trip_clean3, select=c(-realistic_rides))
+
