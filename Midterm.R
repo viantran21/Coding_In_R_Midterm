@@ -73,3 +73,138 @@ weather_clean <- weather_clean %>%
 #precipitation_inches is currently a character, change to numeric
 weather_clean$precipitation_inches <- as.numeric(weather_clean$precipitation_inches)
 summary(weather_clean)
+
+#Exploratory Data Analysis 
+statistics <- function(data){
+    print(summary(data)) #summary of dataset
+    str(data) #number of observations (rows) and variables, and a head() of the first cases
+    print(status(data)) #summary - quantity and percentages of zeros/NAs/infinite numbers, datatype and quantity of unique values
+}
+
+statistics(station_clean)
+statistics(trip_clean)
+statistics(weather_clean)
+
+#display necessary categorical variables in graphs
+colours <- c("darkblue", "blue", "skyblue", "lightblue")
+
+#station
+barplot(table(station_clean$dock_count), 
+          main = paste("Frequency of Dock Counts"), 
+          xlab = "Dock Counts", 
+          ylab = "Frequency", 
+          col = colours,
+          ylim = c(0, 35),
+          cex.names = 1)
+
+barplot(table(station_clean$city), 
+        main = paste("Frequency of Cities"), 
+        xlab = "Cities", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 35),
+        cex.names = 0.8)
+
+#trip
+barplot(table(trip_clean$start_station_name), 
+        main = paste("Frequency of Start Stations"), 
+        xlab = "Start Stations", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 35000),
+        cex.names = 0.5)
+
+barplot(table(trip_clean$end_station_name), 
+        main = paste("Frequency of End Stations"), 
+        xlab = "End Stations", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 35000),
+        cex.names = 0.5)
+max(table(trip_clean$end_station_name))
+
+barplot(table(trip_clean$subscription_type), 
+        main = paste("Frequency of Subscription Type"), 
+        xlab = "Subscription Type", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 300000),
+        cex.names = 1)
+
+#this could also been done in a function but I wanted to personalized certain metrics of the graphs
+
+#the function will display necessary numerical variable
+#trip
+hist(log(trip_clean$duration), 
+        main = paste("Frequency of log(Duration)"), 
+        xlab = "log(Duration)", 
+        ylab = "Frequency", 
+        col = colours,
+        ylim = c(0, 15e+04))
+#NOTE - there are riders who have done on bike rides for more than a day
+
+#weather
+weather_clean_sanfran <- weather_clean %>%
+  filter(weather_clean$city == "San Francisco")
+
+unique(weather_clean$city)
+weather_clean_red <- weather_clean %>% filter(weather_clean$city == "Redwood City")
+
+weather_clean_palo <- weather_clean %>% filter(weather_clean$city == "Palo Alto")
+
+weather_clean_mount <- weather_clean %>% filter(weather_clean$city == "Mountain View")
+
+weather_clean_jose <- weather_clean %>% filter(weather_clean$city == "San Jose")
+
+sanfran <- "San Francisco"
+redwood <- "Redwood City"
+palo <- "Palo Alto"
+mountain <- "Mountain View"
+jose <- "San Jose"
+
+weather_plots_cities <- function(data, city) {
+plot(data$date, data$max_temperature_f, main = paste0("Max Temperature (F) in ", city),
+     xlab = "Date", ylab = "Max Temperature (F)", col = colours, ylim = c(30, 100))
+  
+plot(data$date, data$mean_temperature_f, main = paste0("Mean Temperature (F) in ", city),
+     xlab = "Date", ylab = "Mean Temperature (F)", col = colours, ylim = c(30, 100))
+
+plot(data$date, data$min_temperature_f, main = paste0("Min Temperature (F) in ", city),
+     xlab = "Date", ylab = "Min Temperature (F)", col = colours, ylim = c(30, 100))
+
+plot(data$date, data$max_visibility_miles, main = paste0("Max Visibility Miles in ", city),
+     xlab = "Date", ylab = "Max Visibility Miles", col = colours, ylim = c(0, 10))
+
+plot(data$date, data$mean_visibility_miles, main = paste0("Mean Visibility Miles in ", city),
+     xlab = "Date", ylab = "Mean Visibility Miles", col = colours, ylim = c(0, 10))
+
+max(weather_clean_palo$max_visibility_miles)
+min(weather_clean_mount$min_visibility_miles)
+
+plot(data$date, data$min_visibility_miles, main = paste0("Min Visibility Miles in ", city),
+     xlab = "Date", ylab = "Min Visibility Miles", col = colours, ylim = c(0, 10))
+
+plot(data$date, data$min_visibility_miles, main = paste0("Min Visibility Miles in ", city),
+     xlab = "Date", ylab = "Min Visibility Miles", col = colours, ylim = c(0, 10))
+
+plot(data$date, data$max_wind_Speed_mph, main = paste0("Max Wind Speed (mph) ", city),
+     xlab = "Date", ylab = "Max Wind Speed (mph)", col = colours, ylim = c(5, 40))
+
+plot(data$date, data$mean_wind_speed_mph, main = paste0("Mean Wind Speed (mph) in ", city),
+     xlab = "Date", ylab = "Mean Wind Speed (mph)", col = colours, ylim = c(5, 40))
+
+plot(data$date, data$max_gust_speed_mph, main = paste0("Max Gust Speed (mph) in ", city),
+     xlab = "Date", ylab = "Max Gust Speed (mph)", col = colours)
+
+plot(data$date, data$precipitation_inches, main = paste0("Precipitation (inches) in ", city),
+     xlab = "Date", ylab = "Precipitation (inches)", col = colours)
+
+plot(data$date, data$cloud_cover, main = paste0("Cloud Cover in ", city),
+     xlab = "Date", ylab = "Cloud Cover", col = colours)
+}
+
+weather_plots_cities(weather_clean_sanfran, sanfran)
+weather_plots_cities(weather_clean_red, redwood)
+weather_plots_cities(weather_clean_mount, mountain)
+weather_plots_cities(weather_clean_palo, palo)
+weather_plots_cities(weather_clean_jose, jose)
