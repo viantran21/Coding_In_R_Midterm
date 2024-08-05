@@ -42,6 +42,10 @@ station_clean <- distinct(station)
 trip_clean <- distinct(trip)
 weather_clean <- distinct(weather)
 
+#station - the number of dock_count ranged from 11-27, change it to a factor to see the groups of dock_count
+station_clean$dock_count <- as.factor(station_clean$dock_count)
+summary(station_clean)
+
 #use lubidate to change the dates to Date class
 library(lubridate)
 #station - installation_date change to MDY
@@ -71,7 +75,6 @@ weather_clean$precipitation_inches <- as.numeric(weather_clean$precipitation_inc
 summary(weather_clean)
 
 #Exploratory Data Analysis 
-
 statistics <- function(data){
     print(summary(data)) #summary of dataset
     str(data) #number of observations (rows) and variables, and a head() of the first cases
@@ -205,9 +208,3 @@ weather_plots_cities(weather_clean_red, redwood)
 weather_plots_cities(weather_clean_mount, mountain)
 weather_plots_cities(weather_clean_palo, palo)
 weather_plots_cities(weather_clean_jose, jose)
-
-
-
-
-
-
