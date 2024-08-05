@@ -4,16 +4,8 @@
 #Summer 2024
 
 rm(list = ls())
-#install packages necessary for Exploratory Data Analysis
-#install.packages("tidyverse")
-#install.packages("funModeling")
-#install.packages("Hmisc")
 
-library(tidyverse)
-library(funModeling) 
-library(Hmisc)
-
-#contains data that represents a station where users can pick up or return bikes
+#contains data that represents stations where users can pick up or return bikes
 station <- read_csv("station.csv")
 #data about individual bike trips
 trip <- read_csv("trip.csv")
@@ -46,7 +38,7 @@ weather_clean <- distinct(weather)
 station_clean$dock_count <- as.factor(station_clean$dock_count)
 summary(station_clean)
 
-#use lubidate to change the dates to Date class
+#use lubridate to change the dates to Date class
 library(lubridate)
 #station - installation_date change to MDY
 station_clean$installation_date <- mdy(station_clean$installation_date)
@@ -75,6 +67,15 @@ weather_clean$precipitation_inches <- as.numeric(weather_clean$precipitation_inc
 summary(weather_clean)
 
 #Exploratory Data Analysis 
+#install packages necessary for Exploratory Data Analysis
+#install.packages("tidyverse")
+#install.packages("funModeling")
+#install.packages("Hmisc")
+
+library(tidyverse)
+library(funModeling) 
+library(Hmisc)
+
 statistics <- function(data){
     print(summary(data)) #summary of dataset
     str(data) #number of observations (rows) and variables, and a head() of the first cases
@@ -208,3 +209,20 @@ weather_plots_cities(weather_clean_red, redwood)
 weather_plots_cities(weather_clean_mount, mountain)
 weather_plots_cities(weather_clean_palo, palo)
 weather_plots_cities(weather_clean_jose, jose)
+
+#Cancelled Trips
+#check if the duration is less than 3 minutes (180 seconds) and if the start_station_id is the same as the end_station_id this is a cancelled trip
+#make a new column that states its "cancelled" or "trip"
+trip_clean2 <- trip_clean %>%
+  mutate(trip_status = ifelse(duration < 180 & start_station_id == end_station_id, "cancelled", "trip"))
+
+#record the trip IDs by isolating necessary variables in a new dataset
+trip_cancelled <- trip_clean2 %>% 
+  select(id, duration, start_station_name, end_station_name, start_station_id, 
+         end_station_id, trip_status) %>%
+  filter(trip_status == "cancelled") #filter for cancelled trip
+#this dataset will contain the IDS of the cancelled trips 
+
+#update the main dataset and remove the cancelled trip for further use
+trip_clean2 <- trip_clean2 %>%
+  filter(trip_status == "trip")
