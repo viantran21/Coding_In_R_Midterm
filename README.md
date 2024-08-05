@@ -36,7 +36,7 @@ CANCELLED TRIPS
 OUTLIERS
 
 1. identify outliers in the dataset (the EDA will help you narrow down which outliers to takeout)
-NOTE: the world record for longest distanced cycled without stopping was 202.1 km in 10 hours and 44 minutes. therefore, it is unrealistic for someone to bike for more than 11 hours  (39600 seconds) in one sitting. since it is a rental bike station, each individual will return the bike to a hub when they are not using the bike. also between cities bike, the further distance (San Francisco to San Jose) should not take more than 5 hours to bike without breaks so considering anything above 11 hours as outliers is reasonable 
+NOTE: we are interested in seeing the return of bikes to each station within the next 3 days so the outliers should be above 3 days 
 2. make a new column with outliers or not 
 3. make a new dataset with the necessary information similar to cancelled trip so we have a copy on file for reporting later
 4. record the trips ids for the final report - export it as a CSV file 
