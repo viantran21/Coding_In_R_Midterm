@@ -3,12 +3,6 @@
 #Vian Tran 
 #Summer 2024
 
-#THINGS TO DO
-#edit and comment
-#fix the plan in README
-#export the removed cancelled trip and outliers as a csv for report 
-#start writing the report
-
 rm(list = ls())
 
 #contains data that represents stations where users can pick up or return bikes
@@ -137,7 +131,7 @@ barplot(table(trip_clean$subscription_type),
         ylim = c(0, 300000),
         cex.names = 1)
 
-#the function will display necessary numerical variables
+#display necessary numerical variables in graphs 
 #trip - display necessary numerical variables including log(duration)
 hist(log(trip_clean$duration), 
         main = paste("Frequency of log(Duration)"), 
@@ -147,7 +141,8 @@ hist(log(trip_clean$duration),
         ylim = c(0, 15e+04))
 #NOTE - there are riders who have done on bike rides for more than a day
 
-#weather - display necessary and important weather variables filtered by city 
+#the function will display necessary numerical variables in graphs 
+#weather - display necessary and important weather variables filtered by city in graphs
 weather_clean_sanfran <- weather_clean %>% filter(weather_clean$city == "San Francisco")
 weather_clean_red <- weather_clean %>% filter(weather_clean$city == "Redwood City")
 weather_clean_palo <- weather_clean %>% filter(weather_clean$city == "Palo Alto")
@@ -396,21 +391,21 @@ trip_clean_month <- trip_clean4 %>%
 trip_clean_month <- trip_clean_month %>%
   select(-day_of_week, -day_type)
 
-#find the total duration for each month and convert it to total duration in hours (currently in seconds)
+#find the total time used for each month and convert it to total time used in hours (currently in seconds)
 month_duration <- trip_clean_month %>%
   group_by(month) %>%
-  mutate(total_time_used = sum(duration)) %>%
-  mutate(total_time_used = total_time_used/3600) %>%
+  mutate(total_time_used = sum(duration),
+         total_time_used = total_time_used/3600) %>%
   select(month, total_time_used) %>%
   unique()
   
-#total time available - assign each month the # of days per each month 
+#total time available - assign each month the # of days in each month (ie. Jan 31 days, Feb 28 days, etc.)
 days_month <- data.frame(
   month = month.name,
   days = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 )
 
-#assign these days to the month_duration dataset, merging them by the month
+#assign these days to the month_duration dataset, merging them by the month (you can also do left_join)
 month_duration <- merge(month_duration, days_month, by.x = "month", by.y = "month")
 
 #total time available - convert the # of days to # of hours per each month
@@ -446,7 +441,7 @@ trip_with_city <- trip_subset %>%
 trip_with_city <- trip_with_city %>%
   mutate(start_date = as.Date(start_date, format = "%m/%d/%Y"))
 
-#group it by city and find the number of trips/entries for each day (start_date) 
+#group it by city and start_date and find the number of trips/entries for each day (start_date) 
 trips_city_day <- trip_with_city %>%
   group_by(city, start_date) %>%
   summarise(num_trips = n())
@@ -456,7 +451,6 @@ trip_weather <- trips_city_day %>%
   left_join(weather_clean1, by = c("city", "start_date" = "date"))
 
 #group it by city and look at each weather metric to see which one shows any correlation using cor() function 
-
 correlation <- trip_weather %>%
   group_by(city) %>%
   summarise(
@@ -471,5 +465,7 @@ correlation <- trip_weather %>%
     cor_max_gust_speed = cor(num_trips, max_gust_speed_mph, use = "complete.obs"),
     cor_precip = cor(num_trips, precipitation_inches, use = "complete.obs"),
   )
+#the correlation for max_visibility is NA because for San Jose and Mountain View, for every entry (everyday in the year), they had a max visibility of 10
+#the standard deviation is 0 
 
 view(correlation)
