@@ -256,3 +256,11 @@ sum(trip_clean3$realistic_rides == "unrealistic")
 #remove the helper column realistic_rides to remove outliers trips
 trip_clean3 <- subset(trip_clean3, select=c(-realistic_rides))
 
+#historgram with the outliers remved
+hist(log(trip_clean3$duration), 
+     main = paste("Frequency of log(Duration)"), 
+     xlab = "log(Duration)", 
+     ylab = "Frequency", 
+     col = colours,
+     ylim = c(0, 15e+04))
+
