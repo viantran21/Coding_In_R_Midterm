@@ -409,6 +409,58 @@ month_duration <- month_duration %>%
   mutate(average_utilization = total_time_used/total_time_available) %>% 
   arrange(desc(average_utilization)) #see what months people use the bikes the most vs. least
 
+#Weather Conditions
+#clean the weather dataset a bit more - the wind speed above 50 mph is a strong gale to hurricane force level (over 75 mph)
+#there was no reported high wind speed in those cities in 2014
+#therefore any wind speed above 50 mph should be given NA
+weather_clean1 <- weather_clean %>%
+  mutate(max_wind_Speed_mph = ifelse(max_wind_Speed_mph > 50, NA, max_wind_Speed_mph))
+
+#create separate trip and station dataset to includes variables that are necessary and remove the rest 
+#subset trip - include id, duration, start_date, start_station_name, start_station_id
+trip_subset <- trip_clean4 %>%
+  select(id, duration, start_date, start_station_name, start_station_id)
+
+#subset station - include id and city 
+station_subset <- station_clean %>%
+  select(id, city)
+
+#join new trip and station dataset by the start_station_id (trip) and id (station) so that for each trip entry, it showcases the starting city 
+trip_with_city <- trip_subset %>%
+  left_join(station_subset, by = c("start_station_id" = "id"))
+
+#make the start_date just the date YMD format 
+trip_with_city <- trip_with_city %>%
+  mutate(start_date = as.Date(start_date, format = "%m/%d/%Y"))
+
+#group it by city and find the number of trips/entries for each day (start_date) 
+trips_city_day <- trip_with_city %>%
+  group_by(city, start_date) %>%
+  summarise(num_trips = n())
+
+#combined the trip and weather dataset based on city and date (weather) and start_date and city (trip)
+trip_weather <- trips_city_day %>%
+  left_join(weather_clean1, by = c("city", "start_date" = "date"))
+
+#group it by city and look at each weather metric to see which one shows any correlation using cor() function 
+
+correlation <- trip_weather %>%
+  group_by(city) %>%
+  summarise(
+    cor_temp_max = cor(num_trips, max_temperature_f, use = "complete.obs"),
+    cor_temp_mean = cor(num_trips, mean_temperature_f, use = "complete.obs"),
+    cor_temp_min = cor(num_trips, min_temperature_f, use = "complete.obs"),
+    cor_max_visibility = cor(num_trips, max_visibility_miles, use = "complete.obs"),
+    cor_mean_visibility = cor(num_trips, mean_visibility_miles, use = "complete.obs"),
+    cor_min_visibility = cor(num_trips, min_visibility_miles, use = "complete.obs"),
+    cor_max_wind_speed = cor(num_trips, max_wind_Speed_mph, use = "complete.obs"),
+    cor_mean_wind_speed = cor(num_trips, mean_wind_speed_mph, use = "complete.obs"),
+    cor_max_gust_speed = cor(num_trips, max_gust_speed_mph, use = "complete.obs"),
+    cor_precip = cor(num_trips, precipitation_inches, use = "complete.obs"),
+  )
 
 
+
+install.packages("corrplot")
+library(corrplot)
 
