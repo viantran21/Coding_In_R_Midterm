@@ -3,6 +3,12 @@
 #Vian Tran 
 #Summer 2024
 
+#THINGS TO DO
+#edit and comment
+#fix the plan in README
+#export the removed cancelled trip and outliers as a csv for report 
+#start writing the report
+
 rm(list = ls())
 
 #contains data that represents stations where users can pick up or return bikes
@@ -459,8 +465,4 @@ correlation <- trip_weather %>%
     cor_precip = cor(num_trips, precipitation_inches, use = "complete.obs"),
   )
 
-
-
-install.packages("corrplot")
-library(corrplot)
-
+view(correlation)
