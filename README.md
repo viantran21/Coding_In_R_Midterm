@@ -6,6 +6,7 @@ Summer 2024
 PLAN
 
 load the datasets (station, trips and weather)
+
 *note the trips.csv file is too large to upload and commit to GitHub so please download the file and add it to your working directory
 
 CLEAN
@@ -36,6 +37,7 @@ CANCELLED TRIPS
 OUTLIERS
 
 1. identify outliers in the dataset (the EDA will help you narrow down which outliers to takeout)
+
 NOTE: the world record for longest distanced cycled without stopping was 202.1 km in 10 hours and 44 minutes. therefore, it is unrealistic for someone to bike for more than 11 hours  (39600 seconds) in one sitting. since it is a rental bike station, each individual will return the bike to a hub when they are not using the bike. also between cities bike, the further distance (San Francisco to San Jose) should not take more than 5 hours to bike without breaks so considering anything above 11 hours as outliers is reasonable 
 2. make a new column with outliers or not 
 3. make a new dataset with the necessary information similar to cancelled trip so we have a copy on file for reporting later
@@ -76,8 +78,10 @@ AVERAGE USE PER MONTH
 WEATHER CONDITIONS
 
 1. clean the weather dataset a bit more - the wind speed above 50 mph is a strong gale to hurricane force level (over 75 mph)
+
 NOTE: there was no reported high wind speed in those cities in 2014. therefore any wind speed above 50 mph should be given NA
 2. bofore combining trip and weather dataset: create separate trip and station dataset to includes variables that are necessary and remove the rest 
+
 NOTE: to combine trip and weather we need to merge them by city and date but the trip dataset does not have the city. the station dataset has the station name and city 
 3. need to merge trip and station dataset based on station id to include the city in the trip dataset 
 4. group it by city and start_date and find the number of trips/entries for each day (start_date) 
