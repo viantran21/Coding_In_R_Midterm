@@ -44,7 +44,7 @@ weather_clean <- distinct(weather)
 station_clean$dock_count <- as.factor(station_clean$dock_count)
 summary(station_clean)
 
-#use lubridate to change the dates to Date class
+#use lubridate to change the dates to Date/POSIX 
 library(lubridate)
 #station - installation_date change to MDY
 station_clean$installation_date <- mdy(station_clean$installation_date)
@@ -62,7 +62,7 @@ class(weather_clean$date)
 #trip - change zip codes to only include USA zip codes (based on the areas the hubs are posted in), change the rest to NA 
 trip_clean <- trip_clean %>%
   mutate(zip_code = ifelse(grepl("^[0-9]{5}$", zip_code) & !zip_code %in% c("99999", "0"), zip_code, NA))
-#keep the ZIP code if it starts with a digit (0-9) and it is exactly 5 digits long, otherwise set it to NA
+#keep the ZIP code if it starts with a digit (0-9) and is exactly 5 digits long, otherwise set it to NA
 #also ensure "99999" and "0" are set to NA
 
 #weather - take the T's in precipitate and make them NAs
@@ -80,7 +80,6 @@ summary(weather_clean)
 
 library(tidyverse)
 library(funModeling) 
-library(Hmisc)
 
 statistics <- function(data){
     print(summary(data)) #summary of dataset
@@ -93,9 +92,10 @@ statistics(trip_clean)
 statistics(weather_clean)
 
 #display necessary categorical variables in graphs
+#set the colours for the graphs 
 colours <- c("darkblue", "blue", "skyblue", "lightblue")
 
-#station
+#station - display the categorical variables in graphs including dock counts and cities
 barplot(table(station_clean$dock_count), 
           main = paste("Frequency of Dock Counts"), 
           xlab = "Dock Counts", 
@@ -112,7 +112,7 @@ barplot(table(station_clean$city),
         ylim = c(0, 35),
         cex.names = 0.8)
 
-#trip
+#trip - display the categorical variables in graphs including start stations, end stations and subscription type
 barplot(table(trip_clean$start_station_name), 
         main = paste("Frequency of Start Stations"), 
         xlab = "Start Stations", 
@@ -128,7 +128,6 @@ barplot(table(trip_clean$end_station_name),
         col = colours,
         ylim = c(0, 35000),
         cex.names = 0.5)
-max(table(trip_clean$end_station_name))
 
 barplot(table(trip_clean$subscription_type), 
         main = paste("Frequency of Subscription Type"), 
@@ -138,10 +137,8 @@ barplot(table(trip_clean$subscription_type),
         ylim = c(0, 300000),
         cex.names = 1)
 
-#this could also been done in a function but I wanted to personalized certain metrics of the graphs
-
-#the function will display necessary numerical variable
-#trip
+#the function will display necessary numerical variables
+#trip - display necessary numerical variables including log(duration)
 hist(log(trip_clean$duration), 
         main = paste("Frequency of log(Duration)"), 
         xlab = "log(Duration)", 
@@ -150,17 +147,11 @@ hist(log(trip_clean$duration),
         ylim = c(0, 15e+04))
 #NOTE - there are riders who have done on bike rides for more than a day
 
-#weather
-weather_clean_sanfran <- weather_clean %>%
-  filter(weather_clean$city == "San Francisco")
-
-unique(weather_clean$city)
+#weather - display necessary and important weather variables filtered by city 
+weather_clean_sanfran <- weather_clean %>% filter(weather_clean$city == "San Francisco")
 weather_clean_red <- weather_clean %>% filter(weather_clean$city == "Redwood City")
-
 weather_clean_palo <- weather_clean %>% filter(weather_clean$city == "Palo Alto")
-
 weather_clean_mount <- weather_clean %>% filter(weather_clean$city == "Mountain View")
-
 weather_clean_jose <- weather_clean %>% filter(weather_clean$city == "San Jose")
 
 sanfran <- "San Francisco"
@@ -184,9 +175,6 @@ plot(data$date, data$max_visibility_miles, main = paste0("Max Visibility Miles i
 
 plot(data$date, data$mean_visibility_miles, main = paste0("Mean Visibility Miles in ", city),
      xlab = "Date", ylab = "Mean Visibility Miles", col = colours, ylim = c(0, 10))
-
-max(weather_clean_palo$max_visibility_miles)
-min(weather_clean_mount$min_visibility_miles)
 
 plot(data$date, data$min_visibility_miles, main = paste0("Min Visibility Miles in ", city),
      xlab = "Date", ylab = "Min Visibility Miles", col = colours, ylim = c(0, 10))
@@ -228,6 +216,9 @@ trip_cancelled <- trip_clean2 %>%
          end_station_id, trip_status) %>%
   filter(trip_status == "cancelled") #filter for cancelled trip
 #this dataset will contain the IDS of the cancelled trips 
+
+#export the cancelled trip IDs as a CSV file 
+write.csv(trip_cancelled, "trip_cancelled.csv", row.names = TRUE)
 
 #update the main dataset and remove the cancelled trip for further use
 trip_clean2 <- trip_clean2 %>%
