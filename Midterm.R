@@ -301,3 +301,39 @@ ggplot(hourly_trip_counts, aes(x = hour, y = trip_count)) +
        x = "Hour of Day",
        y = "Number of Trips") +
   theme_minimal() 
+
+#Rush Hour Frequencies 
+#rush hour during the week is considered from 7 to 9 am and 4 (16) to 6 (18) pm 
+
+#for the rush hours range, find the 10 most frequent starting stations and ending stations 
+#filter for rush hours entries during the week (7 to 9 am and 4 to 6 pm)
+trip_clean_rush_hour <- trip_clean_weekday %>%
+  filter (hour %in% c(7, 8, 9, 16, 17, 18))
+#check if the filtering worked
+table(trip_clean_rush_hour$hour)
+
+#lets look at the # of trips for each starting station 
+start_station_trips <- as.data.frame(table(trip_clean_rush_hour$start_station_name)) 
+names(start_station_trips) <- c("start_station_name", "trip_count")
+
+#there are 4 differently named stations compared to the original station file 
+setdiff(start_station_trips$start_station_name, station_clean$name)
+#this could be because of misspelling but the # of trips at these stations are small that it would
+#not impact the top 10 start stations 
+
+start_station_trips <- start_station_trips %>%
+  arrange(desc(trip_count)) %>% 
+  head(10)
+
+#lets look at the # of trips for each ending station
+end_station_trips <- as.data.frame(table(trip_clean_rush_hour$end_station_name)) 
+names(end_station_trips) <- c("end_station_name", "trip_count")
+
+#there are 4 differently named stations compared to the original station file 
+setdiff(end_station_trips$end_station_name, station_clean$name)
+#this could be because of misspelling but the # of trips at these stations are small that it would
+#not impact the top 10 start stations 
+
+end_station_trips <- end_station_trips %>%
+  arrange(desc(trip_count)) %>% 
+  head(10)
