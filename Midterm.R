@@ -4,16 +4,8 @@
 #Summer 2024
 
 rm(list = ls())
-#install packages necessary for Exploratory Data Analysis
-#install.packages("tidyverse")
-#install.packages("funModeling")
-#install.packages("Hmisc")
 
-library(tidyverse)
-library(funModeling) 
-library(Hmisc)
-
-#contains data that represents a station where users can pick up or return bikes
+#contains data that represents stations where users can pick up or return bikes
 station <- read_csv("station.csv")
 #data about individual bike trips
 trip <- read_csv("trip.csv")
@@ -46,7 +38,7 @@ weather_clean <- distinct(weather)
 station_clean$dock_count <- as.factor(station_clean$dock_count)
 summary(station_clean)
 
-#use lubidate to change the dates to Date class
+#use lubridate to change the dates to Date class
 library(lubridate)
 #station - installation_date change to MDY
 station_clean$installation_date <- mdy(station_clean$installation_date)
@@ -75,6 +67,15 @@ weather_clean$precipitation_inches <- as.numeric(weather_clean$precipitation_inc
 summary(weather_clean)
 
 #Exploratory Data Analysis 
+#install packages necessary for Exploratory Data Analysis
+#install.packages("tidyverse")
+#install.packages("funModeling")
+#install.packages("Hmisc")
+
+library(tidyverse)
+library(funModeling) 
+library(Hmisc)
+
 statistics <- function(data){
     print(summary(data)) #summary of dataset
     str(data) #number of observations (rows) and variables, and a head() of the first cases
@@ -208,3 +209,4 @@ weather_plots_cities(weather_clean_red, redwood)
 weather_plots_cities(weather_clean_mount, mountain)
 weather_plots_cities(weather_clean_palo, palo)
 weather_plots_cities(weather_clean_jose, jose)
+
