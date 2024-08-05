@@ -338,6 +338,7 @@ names(end_station_trips) <- c("end_station_ID", "trip_count")
 #there are 4 differently named stations compared to the original station file so doing it based on the ID ensures all is accounted for
 setdiff(end_station_trips$end_station_ID, station_clean$id)
 
+#add the station name to end_station_trips
 end_station_trips <- end_station_trips %>%
   left_join(station_names, by = c("end_station_ID" = "id"))
 
@@ -355,13 +356,15 @@ trip_clean_weekend <- trip_clean4 %>%
 sum(trip_clean_weekend$day_type != "Weekend")
 
 #lets look at the # of trips for each starting station 
-start_station_weekend <- as.data.frame(table(trip_clean_weekend$start_station_name))
-names(start_station_weekend) <- c("start_station_name", "trip_count")
+start_station_weekend <- as.data.frame(table(trip_clean_weekend$start_station_id))
+names(start_station_weekend) <- c("start_station_ID", "trip_count")
 
-#there are 4 differently named stations compared to the original station file 
-setdiff(start_station_weekend$start_station_name, station_clean$name)
-#this could be because of misspelling but the # of trips at these stations are small that it would
-#not impact the top 10 start stations 
+#there are 4 differently named stations compared to the original station file so doing it based on the ID ensures all is accounted for
+setdiff(start_station_weekend$start_station_ID, station_clean$id)
+
+#add the station name to start_station_weekend
+start_station_weekend <- start_station_weekend %>%
+  left_join(station_names, by = c("start_station_ID" = "id"))
 
 #determine the top 10 starting station names
 start_station_weekend <- start_station_weekend %>%
@@ -369,13 +372,15 @@ start_station_weekend <- start_station_weekend %>%
   head(10)
 
 #lets look at the # of trips for each ending station
-end_station_weekend <- as.data.frame(table(trip_clean_weekend$end_station_name))
-names(end_station_weekend) <- c("end_station_name", "trip_count")
+end_station_weekend <- as.data.frame(table(trip_clean_weekend$end_station_id))
+names(end_station_weekend) <- c("end_station_ID", "trip_count")
 
-#there are 4 differently named stations compared to the original station file 
-setdiff(end_station_weekend$end_station_name, station_clean$name)
-#this could be because of misspelling but the # of trips at these stations are small that it would
-#not impact the top 10 start stations 
+#there are 4 differently named stations compared to the original station file so doing it based on the ID ensures all is accounted for
+setdiff(end_station_weekend$end_station_ID, station_clean$id)
+
+#add the station name to end_station_weekend
+end_station_weekend <- end_station_weekend %>%
+  left_join(station_names, by = c("end_station_ID" = "id"))
 
 #determine the top 10 ending station names
 end_station_weekend <- end_station_weekend %>%
