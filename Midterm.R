@@ -264,3 +264,40 @@ hist(log(trip_clean3$duration),
      col = colours,
      ylim = c(0, 15e+04))
 
+#RUSH HOUR
+#make a new column that separates and states whether its a weekday or weekend 
+trip_clean4 <- trip_clean3 %>%
+  mutate(
+    day_of_week = wday(start_date, label = TRUE, abbr = FALSE),
+    day_type = ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "Weekday")
+  )
+
+#filter for weekdays
+trip_clean_weekday <- trip_clean4 %>%
+  filter(day_type == "Weekday")
+#check if there are any weekends
+sum(trip_clean_weekday$day_type != "Weekday")
+
+#extract the hour of the day from the start time 
+trip_clean_weekday <- trip_clean_weekday %>%
+  mutate(hour = hour(start_date))
+
+#count the number of trips per each hour of the day during the week
+trip_clean_weekday <- trip_clean_weekday %>%
+  group_by(hour)
+
+#lets look at the # of trips for each hour of the day
+hourly_trip_counts <- as.data.frame(table(trip_clean_weekday$hour))
+names(hourly_trip_counts) <- c("hour", "trip_count")
+#order them in ascending order 
+hourly_trip_counts <- hourly_trip_counts %>%
+  arrange(desc(trip_count))
+
+#display the hours in a histogram to visualize the rush hours times for weekdays only 
+#find when the trip volume for the hours is the highest
+ggplot(hourly_trip_counts, aes(x = hour, y = trip_count)) +
+  geom_bar(stat = "identity", fill = "skyblue") + #heights of the bars to represent values in the data, use stat="identity"
+  labs(title = "Trip Volume by Hour on Weekdays",
+       x = "Hour of Day",
+       y = "Number of Trips") +
+  theme_minimal() 
