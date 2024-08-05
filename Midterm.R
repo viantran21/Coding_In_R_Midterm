@@ -224,6 +224,7 @@ write.csv(trip_cancelled, "trip_cancelled.csv", row.names = TRUE)
 trip_clean2 <- trip_clean2 %>%
   filter(trip_status == "trip")
 
+#check if all the cancelled trips are removed 
 sum(trip_clean2$trip_status == "cancelled")
 #remove the helper column trip_status to remove cancelled trips
 trip_clean2 <- subset(trip_clean2, select=c(-trip_status))
@@ -231,12 +232,9 @@ trip_clean2 <- subset(trip_clean2, select=c(-trip_status))
 #Outliers
 #the world record for longest distanced cycled without stopping was 202.1 km in 10 hours and 44 minutes
 #therefore, it is unrealistic for someone to bike for more than 11 hours  (39600 seconds) in one sitting 
-#since it is a rental bike station, each individual will return the bike to a hub 
-#also between cities bike, the further distance (San Francisco to San Jose) should not take more than 5 hours without breaks so capping it at 11 hours is generous
-
-#duration > one day (86400 seconds) is excessive since it is renting = expensive
-#even if they are doing a cross city trip via a bike, you need to return your bike 
-#to the hub when you go to sleep 
+#since it is a rental bike station, each individual will return the bike to a hub when they are not using the bike
+#also between cities bike, the further distance (San Francisco to San Jose) should not take more than 5 
+#hours to bike without breaks so considering anything above 11 hours as outliers is reasonable 
 trip_clean3 <- trip_clean2 %>%
   mutate(realistic_rides = ifelse(duration < 39600, "realistic", "unrealistic")) 
 
@@ -245,6 +243,9 @@ trip_outliers <- trip_clean3 %>%
   select(id, duration, start_station_name, end_station_name, realistic_rides) %>%
   filter(realistic_rides == "unrealistic") #filter for unrealistic/outlier trip
 #this dataset will contain the IDS of the outlier trips 
+
+#export the outlier trip IDs as a CSV file 
+write.csv(trip_outliers, "trip_outliers.csv", row.names = TRUE)
 
 #update the main dataset and remove the unrealistic trip for further use
 trip_clean3 <- trip_clean3 %>%
