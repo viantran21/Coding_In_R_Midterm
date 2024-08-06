@@ -143,6 +143,8 @@ hist(log(trip_clean$duration),
 
 #the function will display necessary numerical variables in graphs 
 #weather - display necessary and important weather variables filtered by city in graphs
+
+#creating separate datasets and variables for each city
 weather_clean_sanfran <- weather_clean %>% filter(weather_clean$city == "San Francisco")
 weather_clean_red <- weather_clean %>% filter(weather_clean$city == "Redwood City")
 weather_clean_palo <- weather_clean %>% filter(weather_clean$city == "Palo Alto")
@@ -155,6 +157,7 @@ palo <- "Palo Alto"
 mountain <- "Mountain View"
 jose <- "San Jose"
 
+#weather plotting function will plot necessary variables (weather metrics) for each city
 weather_plots_cities <- function(data, city) {
 plot(data$date, data$max_temperature_f, main = paste0("Max Temperature (F) in ", city),
      xlab = "Date", ylab = "Max Temperature (F)", col = colours, ylim = c(30, 100))
@@ -193,6 +196,7 @@ plot(data$date, data$cloud_cover, main = paste0("Cloud Cover in ", city),
      xlab = "Date", ylab = "Cloud Cover", col = colours)
 }
 
+#use the function to plot the weather conditions for each city throughout 2014
 weather_plots_cities(weather_clean_sanfran, sanfran)
 weather_plots_cities(weather_clean_red, redwood)
 weather_plots_cities(weather_clean_mount, mountain)
@@ -221,6 +225,7 @@ trip_clean2 <- trip_clean2 %>%
 
 #check if all the cancelled trips are removed 
 sum(trip_clean2$trip_status == "cancelled")
+
 #remove the helper column trip_status to remove cancelled trips
 trip_clean2 <- subset(trip_clean2, select=c(-trip_status))
 
@@ -238,12 +243,12 @@ trip_outliers <- trip_clean3 %>%
 #export the outlier trip IDs as a CSV file 
 write.csv(trip_outliers, "trip_outliers.csv", row.names = TRUE)
 
-#update the main dataset and remove the unrealistic trip for further use
+#update the main dataset and remove the outlier trip for further use
 trip_clean3 <- trip_clean3 %>%
   filter(outliers == "data") #filter and isolates entries that not outliers (< 3 days)
 #check if all the outliers are removed 
 sum(trip_clean3$outliers == "outliers")
-#remove the helper column realistic_rides to keep the dataset clean 
+#remove the helper column outliers to keep the dataset clean 
 trip_clean3 <- subset(trip_clean3, select=c(-outliers))
 
 #histogram update of duration with the outliers removed
@@ -265,6 +270,7 @@ trip_clean4 <- trip_clean3 %>%
 #filter for weekdays
 trip_clean_weekday <- trip_clean4 %>%
   filter(day_type == "Weekday")
+
 #check if there are any weekends
 sum(trip_clean_weekday$day_type != "Weekday")
 
@@ -461,8 +467,9 @@ correlation <- trip_weather %>%
     max_gust_speed = cor(num_trips, max_gust_speed_mph, use = "complete.obs"),
     precipitation = cor(num_trips, precipitation_inches, use = "complete.obs")
   ) 
-#the correlation for max_visibility is NA because for San Jose and Mountain View, for every entry (everyday in the year), they had a max visibility of 10
-#the standard deviation is 0 
+#the correlation for max_visibility is NA because for San Jose and Mountain View, for every entry (everyday in the year), 
+#they had a max visibility of 10 so the standard deviation is 0 
+#this explains the warning in cor()
 
 #transpose the matrix to make cities on the column and the weather metric for the rows
 correlation_t <- as.matrix(t(correlation[,-1]))
