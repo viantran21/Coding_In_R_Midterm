@@ -113,7 +113,7 @@ barplot(table(trip_clean$start_station_name),
         ylab = "Frequency", 
         col = colours,
         ylim = c(0, 35000),
-        cex.names = 0.5)
+        cex.names = 1)
 
 barplot(table(trip_clean$end_station_name), 
         main = paste("Frequency of End Stations"), 
@@ -121,7 +121,7 @@ barplot(table(trip_clean$end_station_name),
         ylab = "Frequency", 
         col = colours,
         ylim = c(0, 35000),
-        cex.names = 0.5)
+        cex.names = 1)
 
 barplot(table(trip_clean$subscription_type), 
         main = paste("Frequency of Subscription Type"), 
@@ -134,8 +134,8 @@ barplot(table(trip_clean$subscription_type),
 #display necessary numerical variables in graphs 
 #trip - display necessary numerical variables including log(duration)
 hist(log(trip_clean$duration), 
-        main = paste("Frequency of log(Duration)"), 
-        xlab = "log(Duration)", 
+        main = paste("Frequency of loge(Duration)"), 
+        xlab = "loge(Duration)", 
         ylab = "Frequency", 
         col = colours,
         ylim = c(0, 15e+04))
@@ -225,18 +225,14 @@ sum(trip_clean2$trip_status == "cancelled")
 trip_clean2 <- subset(trip_clean2, select=c(-trip_status))
 
 #Outliers
-#the world record for longest distanced cycled without stopping was 202.1 km in 10 hours and 44 minutes
-#therefore, it is unrealistic for someone to bike for more than 11 hours  (39600 seconds) in one sitting 
-#since it is a rental bike station, each individual will return the bike to a hub when they are not using the bike
-#also between cities bike, the further distance (San Francisco to San Jose) should not take more than 5 
-#hours to bike without breaks so considering anything above 11 hours as outliers is reasonable 
+#we are interested in seeing the return of bikes to each station within the next 3 days so the outliers should be above 3 days (259200 seconds)
 trip_clean3 <- trip_clean2 %>%
-  mutate(realistic_rides = ifelse(duration < 39600, "realistic", "unrealistic")) 
+  mutate(outliers = ifelse(duration < 259200, "data", "outlier")) 
 
 #record the trip IDs that were outliers by isolating necessary variables in a new dataset
 trip_outliers <- trip_clean3 %>% 
-  select(id, duration, start_station_name, end_station_name, realistic_rides) %>%
-  filter(realistic_rides == "unrealistic") #filter for unrealistic/outlier trip
+  select(id, duration, start_station_name, end_station_name, outliers) %>%
+  filter(outliers == "outlier") #filter for outlier trip
 #this dataset will contain the IDS of the outlier trips 
 
 #export the outlier trip IDs as a CSV file 
@@ -244,11 +240,11 @@ write.csv(trip_outliers, "trip_outliers.csv", row.names = TRUE)
 
 #update the main dataset and remove the unrealistic trip for further use
 trip_clean3 <- trip_clean3 %>%
-  filter(realistic_rides == "realistic") #filter and isolates entries that are under 11 hours long 
+  filter(outliers == "data") #filter and isolates entries that not outliers (< 3 days)
 #check if all the outliers are removed 
-sum(trip_clean3$realistic_rides == "unrealistic")
+sum(trip_clean3$outliers == "outliers")
 #remove the helper column realistic_rides to keep the dataset clean 
-trip_clean3 <- subset(trip_clean3, select=c(-realistic_rides))
+trip_clean3 <- subset(trip_clean3, select=c(-outliers))
 
 #histogram update of duration with the outliers removed
 hist(log(trip_clean3$duration), 
@@ -454,18 +450,24 @@ trip_weather <- trips_city_day %>%
 correlation <- trip_weather %>%
   group_by(city) %>%
   summarise(
-    cor_temp_max = cor(num_trips, max_temperature_f, use = "complete.obs"),
-    cor_temp_mean = cor(num_trips, mean_temperature_f, use = "complete.obs"),
-    cor_temp_min = cor(num_trips, min_temperature_f, use = "complete.obs"),
-    cor_max_visibility = cor(num_trips, max_visibility_miles, use = "complete.obs"),
-    cor_mean_visibility = cor(num_trips, mean_visibility_miles, use = "complete.obs"),
-    cor_min_visibility = cor(num_trips, min_visibility_miles, use = "complete.obs"),
-    cor_max_wind_speed = cor(num_trips, max_wind_Speed_mph, use = "complete.obs"),
-    cor_mean_wind_speed = cor(num_trips, mean_wind_speed_mph, use = "complete.obs"),
-    cor_max_gust_speed = cor(num_trips, max_gust_speed_mph, use = "complete.obs"),
-    cor_precip = cor(num_trips, precipitation_inches, use = "complete.obs"),
-  )
+    max_temperature = cor(num_trips, max_temperature_f, use = "complete.obs"),
+    mean_temperature = cor(num_trips, mean_temperature_f, use = "complete.obs"),
+    mmin_temperature = cor(num_trips, min_temperature_f, use = "complete.obs"),
+    max_visibility = cor(num_trips, max_visibility_miles, use = "complete.obs"),
+    mean_visibility = cor(num_trips, mean_visibility_miles, use = "complete.obs"),
+    min_visibility = cor(num_trips, min_visibility_miles, use = "complete.obs"),
+    max_wind_speed = cor(num_trips, max_wind_Speed_mph, use = "complete.obs"),
+    mean_wind_speed = cor(num_trips, mean_wind_speed_mph, use = "complete.obs"),
+    max_gust_speed = cor(num_trips, max_gust_speed_mph, use = "complete.obs"),
+    precipitation = cor(num_trips, precipitation_inches, use = "complete.obs")
+  ) 
 #the correlation for max_visibility is NA because for San Jose and Mountain View, for every entry (everyday in the year), they had a max visibility of 10
 #the standard deviation is 0 
 
-view(correlation)
+#transpose the matrix to make cities on the column and the weather metric for the rows
+correlation_t <- as.matrix(t(correlation[,-1]))
+#rename the columns the cities 
+colnames(correlation_t) <- correlation$city
+
+view(correlation_t)
+
