@@ -3,6 +3,14 @@
 #Vian Tran 
 #Summer 2024
 
+#install packages necessary for Exploratory Data Analysis
+#install.packages("tidyverse")
+#install.packages("funModeling")
+#install.packages("Hmisc")
+
+library(tidyverse)
+library(funModeling) 
+
 rm(list = ls())
 
 #contains data that represents stations where users can pick up or return bikes
@@ -67,14 +75,6 @@ weather_clean$precipitation_inches <- as.numeric(weather_clean$precipitation_inc
 summary(weather_clean)
 
 #Exploratory Data Analysis 
-#install packages necessary for Exploratory Data Analysis
-#install.packages("tidyverse")
-#install.packages("funModeling")
-#install.packages("Hmisc")
-
-library(tidyverse)
-library(funModeling) 
-
 statistics <- function(data){
     print(summary(data)) #summary of dataset
     str(data) #number of observations (rows) and variables, and a head() of the first cases
