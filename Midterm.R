@@ -16,6 +16,7 @@ rm(list = ls())
 #contains data that represents stations where users can pick up or return bikes
 station <- read_csv("station.csv")
 #data about individual bike trips
+# SK (Points taken) trip.csv is missing from repo. I am adding it.
 trip <- read_csv("trip.csv")
 #data about the weather on a specific day for certain zip codes/cities
 weather <- read_csv("weather.csv")
@@ -68,6 +69,8 @@ trip_clean <- trip_clean %>%
 #also ensure "99999" and "0" are set to NA
 
 #weather - take the T's in precipitate and make them NAs
+# The codebook on the Kaggle link provided informs us that 'T' stands
+# for trace amounts. They should be greater than zero.
 weather_clean <- weather_clean %>% 
   mutate(precipitation_inches = ifelse(precipitation_inches == "T", NA, precipitation_inches))
 #precipitation_inches is currently a character, change to numeric
@@ -82,6 +85,10 @@ statistics <- function(data){
 }
 
 statistics(station_clean)
+# SK The output of the code below shows 70 unique start/end station IDs, and 
+# 74 unique start/end station names. This is a discrepancy worth noting and 
+# I realize you prefer to use station ids for this reason but this is not
+# mentioned in your report.
 statistics(trip_clean)
 statistics(weather_clean)
 
@@ -231,6 +238,9 @@ trip_clean2 <- subset(trip_clean2, select=c(-trip_status))
 
 #Outliers
 #we are interested in seeing the return of bikes to each station within the next 3 days so the outliers should be above 3 days (259200 seconds)
+# SK Can you provide evidence for your assumption above? When identifying outliers
+# try to use either subject matter expert opinion, or statistical approaches.
+# Gut feelings are not always helpful.
 trip_clean3 <- trip_clean2 %>%
   mutate(outliers = ifelse(duration < 259200, "data", "outlier")) 
 
@@ -402,6 +412,7 @@ month_duration <- trip_clean_month %>%
   unique()
   
 #total time available - assign each month the # of days in each month (ie. Jan 31 days, Feb 28 days, etc.)
+# SK lubridate package has a nice function for this
 days_month <- data.frame(
   month = month.name,
   days = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
@@ -418,7 +429,9 @@ month_duration <- month_duration %>%
 month_duration <- month_duration %>% 
   mutate(average_utilization = total_time_used/total_time_available) %>% 
   arrange(desc(average_utilization)) #see what months people use the bikes the most vs. least
-
+# SK from your report "There is lower use in bikes in the winter months where it is colder 
+# and may be snowing.". Your weather dataset events do not have a single entry for snow,
+# so I guess snow in Bay Area is unlikely. 
 #Weather Conditions
 #clean the weather dataset a bit more - the wind speed above 50 mph is a strong gale to hurricane force level (over 75 mph)
 #there was no reported high wind speed in those cities in 2014
@@ -451,6 +464,11 @@ trips_city_day <- trip_with_city %>%
 #combined the trip and weather dataset based on city and date (weather) and start_date and city (trip)
 trip_weather <- trips_city_day %>%
   left_join(weather_clean1, by = c("city", "start_date" = "date"))
+# SK From your report; excluding events from the correlation analysis because
+# of NAs is not realistic. The column records events, and the lack of an event does
+# not mean it should be excluded. In terms of weather, it means no rain/fog
+# happened. It would have been better to replace empty strings with "No event" and
+# include them in the correlation as a factor column.
 
 #group it by city and look at each weather metric to see which one shows any correlation using cor() function 
 correlation <- trip_weather %>%
